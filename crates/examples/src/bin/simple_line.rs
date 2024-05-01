@@ -1,7 +1,7 @@
 //! A simple example of parsing `.debug_line`.
 
 use object::{Object, ObjectSection};
-use std::{borrow, env, fs, path};
+use std::{borrow, collections::HashMap, env, fs, path::{self, Path, PathBuf}};
 
 fn main() {
     for path in env::args().skip(1) {
@@ -40,6 +40,14 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
     // Create `EndianSlice`s for all of the sections.
     let dwarf = dwarf_cow.borrow(&borrow_section);
 
+    type Line = u64;
+    type Column = u64;
+    // TODO: bytes count instead of instructions counts
+    type Occurrences = u64;
+
+
+    let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, HashMap<Column, Occurrences>>> = HashMap::new();
+
     // Iterate over the compilation units.
     let mut iter = dwarf.units();
     while let Some(header) = iter.next()? {
@@ -48,6 +56,8 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
             header.offset().as_debug_info_offset().unwrap().0
         );
         let unit = dwarf.unit(header)?;
+
+
 
         // Get the line program for the compilation unit.
         if let Some(program) = unit.line_program.clone() {
@@ -96,6 +106,10 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
                         gimli::ColumnType::LeftEdge => 0,
                         gimli::ColumnType::Column(column) => column.get(),
                     };
+
+                    bytes_on_line.entry(path.clone()).or_insert(HashMap::new())
+                        .entry(line).or_insert(HashMap::new())
+                        .entry(column).or_insert(0);
 
                     println!("{:x} {}:{}:{}", row.address(), path.display(), line, column);
                 }
