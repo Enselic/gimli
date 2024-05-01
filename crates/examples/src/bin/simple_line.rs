@@ -1,7 +1,12 @@
 //! A simple example of parsing `.debug_line`.
 
 use object::{Object, ObjectSection};
-use std::{borrow, collections::HashMap, env, fs, path::{self, Path, PathBuf}};
+use std::{
+    borrow,
+    collections::HashMap,
+    env, fs,
+    path::{self, Path, PathBuf},
+};
 
 fn main() {
     for path in env::args().skip(1) {
@@ -45,8 +50,8 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
     // TODO: bytes count instead of instructions counts
     type Occurrences = u64;
 
-
-    let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, HashMap<Column, Occurrences>>> = HashMap::new();
+    let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, HashMap<Column, Occurrences>>> =
+        HashMap::new();
 
     // Iterate over the compilation units.
     let mut iter = dwarf.units();
@@ -56,8 +61,6 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
             header.offset().as_debug_info_offset().unwrap().0
         );
         let unit = dwarf.unit(header)?;
-
-
 
         // Get the line program for the compilation unit.
         if let Some(program) = unit.line_program.clone() {
@@ -107,11 +110,26 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
                         gimli::ColumnType::Column(column) => column.get(),
                     };
 
-                    bytes_on_line.entry(path.clone()).or_insert(HashMap::new())
-                        .entry(line).or_insert(HashMap::new())
-                        .entry(column).or_insert(0);
+                    bytes_on_line
+                        .entry(path.clone())
+                        .or_insert(HashMap::new())
+                        .entry(line)
+                        .or_insert(HashMap::new())
+                        .entry(column)
+                        .and_modify(|c| *c += 1)
+                        .or_insert(1);
 
-                    println!("{:x} {}:{}:{}", row.address(), path.display(), line, column);
+                    // println!("{:x} {}:{}:{}", row.address(), path.display(), line, column);
+                }
+            }
+        }
+
+        for x in bytes_on_line.iter() {
+            println!("File: {}", x.0.display());
+            for y in x.1.iter() {
+                println!("  Line: {}", y.0);
+                for z in y.1.iter() {
+                    println!("    Column: {} - {}", z.0, z.1);
                 }
             }
         }
