@@ -5,7 +5,7 @@ use std::{
     borrow,
     collections::HashMap,
     env, fs,
-    path::{self, Path, PathBuf},
+    path::{self, PathBuf},
 };
 
 fn main() {
@@ -45,10 +45,14 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
     // Create `EndianSlice`s for all of the sections.
     let dwarf = dwarf_cow.borrow(&borrow_section);
 
-    type Line = u64;
-    type Column = u64;
-    // TODO: bytes count instead of instructions counts
-    type Occurrences = u64;
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+    struct Line(u64);
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+    struct Column(u64);
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+    struct Occurrences(u64);
 
     let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, HashMap<Column, Occurrences>>> =
         HashMap::new();
@@ -56,10 +60,10 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
     // Iterate over the compilation units.
     let mut iter = dwarf.units();
     while let Some(header) = iter.next()? {
-        println!(
-            "Line number info for unit at <.debug_info+0x{:x}>",
-            header.offset().as_debug_info_offset().unwrap().0
-        );
+        // println!(
+        //     "Line number info for unit at <.debug_info+0x{:x}>",
+        //     header.offset().as_debug_info_offset().unwrap().0
+        // );
         let unit = dwarf.unit(header)?;
 
         // Get the line program for the compilation unit.
@@ -75,7 +79,7 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
             while let Some((header, row)) = rows.next_row()? {
                 if row.end_sequence() {
                     // End of sequence indicates a possible gap in addresses.
-                    println!("{:x} end-sequence", row.address());
+                    // println!("{:x} end-sequence", row.address());
                 } else {
                     // Determine the path. Real applications should cache this for performance.
                     let mut path = path::PathBuf::new();
@@ -110,29 +114,42 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
                         gimli::ColumnType::Column(column) => column.get(),
                     };
 
-                    bytes_on_line
-                        .entry(path.clone())
-                        .or_insert(HashMap::new())
-                        .entry(line)
-                        .or_insert(HashMap::new())
-                        .entry(column)
-                        .and_modify(|c| *c += 1)
-                        .or_insert(1);
+                    let lines = bytes_on_line.entry(path.clone()).or_default();
+                    let columns = lines.entry(Line(line)).or_default();
+                    let occurrences = columns.entry(Column(column)).or_default();
+                    occurrences.0 += 1;
 
                     // println!("{:x} {}:{}:{}", row.address(), path.display(), line, column);
                 }
             }
         }
 
-        for x in bytes_on_line.iter() {
-            println!("File: {}", x.0.display());
-            for y in x.1.iter() {
-                println!("  Line: {}", y.0);
-                for z in y.1.iter() {
-                    println!("    Column: {} - {}", z.0, z.1);
-                }
+    }
+
+
+
+    for (path, lines) in &bytes_on_line {
+        for (line, columns) in lines {
+            // println!(
+            //     " File: {} Line: {}",
+            //     path.display(),
+            //     line.0,
+            //     //total_accumulation
+            // );
+
+            let total_accumulation = columns
+                .values()
+                .fold(0u64, |acc, occurrences| acc + occurrences.0);
+            if total_accumulation > 1 {
+                println!(
+                    "{}:{} instructions: {}",
+                    path.display(),
+                    line.0,
+                    total_accumulation
+                );
             }
         }
     }
+
     Ok(())
 }
