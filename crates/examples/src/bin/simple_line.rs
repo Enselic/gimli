@@ -54,8 +54,16 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
     struct Occurrences(u64);
 
-    let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, HashMap<Column, Occurrences>>> =
-        HashMap::new();
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+    struct Address(u64);
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    struct LineInfo {
+        addresses: Vec<Address>,
+        columns: HashMap<Column, Occurrences>,
+    };
+
+    let mut bytes_on_line: HashMap<PathBuf, HashMap<Line, LineInfo>> = HashMap::new();
 
     // Iterate over the compilation units.
     let mut iter = dwarf.units();
@@ -115,21 +123,19 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
                     };
 
                     let lines = bytes_on_line.entry(path.clone()).or_default();
-                    let columns = lines.entry(Line(line)).or_default();
+                    let LineInfo { addresses, columns } = lines.entry(Line(line)).or_default();
                     let occurrences = columns.entry(Column(column)).or_default();
                     occurrences.0 += 1;
+                    addresses.push(Address(row.address()));
 
                     // println!("{:x} {}:{}:{}", row.address(), path.display(), line, column);
                 }
             }
         }
-
     }
 
-
-
     for (path, lines) in &bytes_on_line {
-        for (line, columns) in lines {
+        for (line, line_info) in lines {
             // println!(
             //     " File: {} Line: {}",
             //     path.display(),
@@ -137,15 +143,21 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
             //     //total_accumulation
             // );
 
-            let total_accumulation = columns
+            let instructions = line_info
+                .columns
                 .values()
                 .fold(0u64, |acc, occurrences| acc + occurrences.0);
-            if total_accumulation > 1 {
+            if instructions > 1 {
                 println!(
-                    "{}:{} instructions: {}",
+                    "{}:{} instructions: {} ({:?})",
                     path.display(),
                     line.0,
-                    total_accumulation
+                    instructions,
+                    line_info
+                        .addresses
+                        .iter()
+                        .map(|a| format!("{:#x}", a.0))
+                        .collect::<Vec<_>>(),
                 );
             }
         }
