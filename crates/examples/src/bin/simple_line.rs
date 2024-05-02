@@ -18,11 +18,15 @@ fn main() {
         } else {
             gimli::RunTimeEndian::Big
         };
-        dump_file(&object, endian).unwrap();
+        dump_file(&path, &object, endian).unwrap();
     }
 }
 
-fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), gimli::Error> {
+fn dump_file(
+    exe: &str,
+    object: &object::File,
+    endian: gimli::RunTimeEndian,
+) -> Result<(), gimli::Error> {
     // Load a section and return as `Cow<[u8]>`.
     let load_section = |id: gimli::SectionId| -> Result<borrow::Cow<[u8]>, gimli::Error> {
         match object.section_by_name(id.name()) {
@@ -149,15 +153,17 @@ fn dump_file(object: &object::File, endian: gimli::RunTimeEndian) -> Result<(), 
                 .fold(0u64, |acc, occurrences| acc + occurrences.0);
             if instructions > 1 {
                 println!(
-                    "{}:{} instructions: {} ({:?})",
+                    "{}:{} instructions: {}       addr2line --demangle --functions --exe {} {}",
                     path.display(),
                     line.0,
                     instructions,
+                    exe,
                     line_info
                         .addresses
                         .iter()
                         .map(|a| format!("{:#x}", a.0))
-                        .collect::<Vec<_>>(),
+                        .collect::<Vec<_>>()
+                        .join(" "),
                 );
             }
         }
