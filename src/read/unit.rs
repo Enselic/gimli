@@ -873,7 +873,6 @@ where
     }
 
     /// Return the input buffer after the last attribute.
-    #[inline(always)]
     fn after_attrs(&self) -> Result<R> {
         if let Some(attrs_len) = self.attrs_len.get() {
             let mut input = self.attrs_slice.clone();
@@ -901,7 +900,6 @@ where
     }
 
     /// Parse an entry. Returns `Ok(None)` for null entries.
-    #[inline(always)]
     fn parse(
         input: &mut R,
         unit: &'unit UnitHeader<R>,
@@ -1721,31 +1719,26 @@ impl<R: Reader> Attribute<R> {
     }
 
     /// Try to convert this attribute's value to a u8.
-    #[inline]
     pub fn u8_value(&self) -> Option<u8> {
         self.value.u8_value()
     }
 
     /// Try to convert this attribute's value to a u16.
-    #[inline]
     pub fn u16_value(&self) -> Option<u16> {
         self.value.u16_value()
     }
 
     /// Try to convert this attribute's value to an unsigned integer.
-    #[inline]
     pub fn udata_value(&self) -> Option<u64> {
         self.value.udata_value()
     }
 
     /// Try to convert this attribute's value to a signed integer.
-    #[inline]
     pub fn sdata_value(&self) -> Option<i64> {
         self.value.sdata_value()
     }
 
     /// Try to convert this attribute's value to an offset.
-    #[inline]
     pub fn offset_value(&self) -> Option<R::Offset> {
         self.value.offset_value()
     }
@@ -1755,7 +1748,6 @@ impl<R: Reader> Attribute<R> {
     /// Expressions and locations may be `DW_FORM_block*` or `DW_FORM_exprloc`.
     /// The standard doesn't mention `DW_FORM_block*` as a possible form, but
     /// it is encountered in practice.
-    #[inline]
     pub fn exprloc_value(&self) -> Option<Expression<R>> {
         self.value.exprloc_value()
     }
@@ -1769,7 +1761,6 @@ impl<R: Reader> Attribute<R> {
     ///
     /// Warning: this function does not handle all possible string forms.
     /// Use `Dwarf::attr_string` instead.
-    #[inline]
     pub fn string_value(&self, debug_str: &DebugStr<R>) -> Option<R> {
         self.value.string_value(debug_str)
     }
@@ -1784,7 +1775,6 @@ impl<R: Reader> Attribute<R> {
     ///
     /// Warning: this function does not handle all possible string forms.
     /// Use `Dwarf::attr_string` instead.
-    #[inline]
     pub fn string_value_sup(
         &self,
         debug_str: &DebugStr<R>,
@@ -2280,7 +2270,6 @@ impl<'abbrev, 'entry, 'unit, R: Reader> AttrsIter<'abbrev, 'entry, 'unit, R> {
     /// Returns `None` when iteration is finished. If an error
     /// occurs while parsing the next attribute, then this error
     /// is returned, and all subsequent calls return `None`.
-    #[inline(always)]
     pub fn next(&mut self) -> Result<Option<Attribute<R>>> {
         if self.attributes.is_empty() {
             // Now that we have parsed all of the attributes, we know where
@@ -2390,7 +2379,6 @@ where
 
 impl<'abbrev, 'unit, R: Reader> EntriesRaw<'abbrev, 'unit, R> {
     /// Return true if there is no more input.
-    #[inline]
     pub fn is_empty(&self) -> bool {
         self.input.is_empty()
     }
@@ -2407,7 +2395,6 @@ impl<'abbrev, 'unit, R: Reader> EntriesRaw<'abbrev, 'unit, R> {
     ///
     /// This depth is updated when `read_abbreviation` is called, and is updated
     /// based on null entries and the `has_children` field in the abbreviation.
-    #[inline]
     pub fn next_depth(&self) -> isize {
         self.depth
     }
@@ -2415,7 +2402,6 @@ impl<'abbrev, 'unit, R: Reader> EntriesRaw<'abbrev, 'unit, R> {
     /// Read an abbreviation code and lookup the corresponding `Abbreviation`.
     ///
     /// Returns `Ok(None)` for null entries.
-    #[inline]
     pub fn read_abbreviation(&mut self) -> Result<Option<&'abbrev Abbreviation>> {
         let code = self.input.read_uleb128()?;
         if code == 0 {
@@ -2433,13 +2419,11 @@ impl<'abbrev, 'unit, R: Reader> EntriesRaw<'abbrev, 'unit, R> {
     }
 
     /// Read an attribute.
-    #[inline]
     pub fn read_attribute(&mut self, spec: AttributeSpecification) -> Result<Attribute<R>> {
         parse_attribute(&mut self.input, self.unit.encoding(), spec)
     }
 
     /// Skip all the attributes of an abbreviation.
-    #[inline]
     pub fn skip_attributes(&mut self, specs: &[AttributeSpecification]) -> Result<()> {
         skip_attributes(&mut self.input, self.unit.encoding(), specs)
     }
@@ -2475,7 +2459,6 @@ impl<'abbrev, 'unit, R: Reader> EntriesCursor<'abbrev, 'unit, R> {
     ///
     /// If the cursor is not pointing at an entry, or if the current entry is a
     /// null entry, then `None` is returned.
-    #[inline]
     pub fn current(&self) -> Option<&DebuggingInformationEntry<'abbrev, 'unit, R>> {
         self.cached_current.as_ref()
     }

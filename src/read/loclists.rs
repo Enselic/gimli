@@ -556,7 +556,6 @@ impl<R: Reader> LocListIter<R> {
         }
     }
 
-    #[inline]
     fn get_address(&self, index: DebugAddrIndex<R::Offset>) -> Result<u64> {
         self.debug_addr
             .get_address(self.raw.encoding.address_size, self.debug_addr_base, index)

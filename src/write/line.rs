@@ -157,37 +157,31 @@ impl LineProgram {
     }
 
     /// Return true if this line program was created with `LineProgram::none()`.
-    #[inline]
     pub fn is_none(&self) -> bool {
         self.none
     }
 
     /// Return the encoding parameters for this line program.
-    #[inline]
     pub fn encoding(&self) -> Encoding {
         self.encoding
     }
 
     /// Return the DWARF version for this line program.
-    #[inline]
     pub fn version(&self) -> u16 {
         self.encoding.version
     }
 
     /// Return the address size in bytes for this line program.
-    #[inline]
     pub fn address_size(&self) -> u8 {
         self.encoding.address_size
     }
 
     /// Return the DWARF format for this line program.
-    #[inline]
     pub fn format(&self) -> Format {
         self.encoding.format
     }
 
     /// Return the id for the working directory of the compilation unit.
-    #[inline]
     pub fn default_directory(&self) -> DirectoryId {
         DirectoryId(0)
     }
@@ -344,13 +338,11 @@ impl LineProgram {
     }
 
     /// Return true if a sequence has begun.
-    #[inline]
     pub fn in_sequence(&self) -> bool {
         self.in_sequence
     }
 
     /// Returns a reference to the data for the current row.
-    #[inline]
     pub fn row(&mut self) -> &mut LineRow {
         &mut self.row
     }
@@ -481,7 +473,6 @@ impl LineProgram {
     /// Returns true if the line number program has no instructions.
     ///
     /// Does not check the file or directory entries.
-    #[inline]
     pub fn is_empty(&self) -> bool {
         self.instructions.is_empty()
     }

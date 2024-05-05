@@ -87,7 +87,6 @@ macro_rules! define_id {
         }
 
         impl $name {
-            #[inline]
             fn new(base_id: BaseId, index: usize) -> Self {
                 $name { base_id, index }
             }
@@ -107,7 +106,6 @@ macro_rules! define_offsets {
 
         impl $offsets {
             /// Return an empty list of offsets.
-            #[inline]
             pub fn none() -> Self {
                 $offsets {
                     base_id: BaseId::default(),
@@ -120,14 +118,12 @@ macro_rules! define_offsets {
             /// # Panics
             ///
             /// Panics if `id` is invalid.
-            #[inline]
             pub fn get(&self, id: $id) -> $offset {
                 debug_assert_eq!(self.base_id, id.base_id);
                 self.offsets[id.index]
             }
 
             /// Return the number of offsets.
-            #[inline]
             pub fn count(&self) -> usize {
                 self.offsets.len()
             }

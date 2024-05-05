@@ -493,7 +493,6 @@ impl<R: Reader> RngListIter<R> {
         }
     }
 
-    #[inline]
     fn get_address(&self, index: DebugAddrIndex<R::Offset>) -> Result<u64> {
         self.debug_addr
             .get_address(self.raw.encoding.address_size, self.debug_addr_base, index)
@@ -604,7 +603,6 @@ pub(crate) struct RawRange {
 
 impl RawRange {
     /// Check if this is a range end entry.
-    #[inline]
     pub fn is_end(&self) -> bool {
         self.begin == 0 && self.end == 0
     }
@@ -613,13 +611,11 @@ impl RawRange {
     ///
     /// A base address selection entry changes the base address that subsequent
     /// range entries are relative to.
-    #[inline]
     pub fn is_base_address(&self, address_size: u8) -> bool {
         self.begin == !0 >> (64 - address_size * 8)
     }
 
     /// Parse an address range entry from `.debug_ranges` or `.debug_loc`.
-    #[inline]
     pub fn parse<R: Reader>(input: &mut R, address_size: u8) -> Result<RawRange> {
         let begin = input.read_address(address_size)?;
         let end = input.read_address(address_size)?;
@@ -640,7 +636,6 @@ pub struct Range {
 
 impl Range {
     /// Add a base address to this range.
-    #[inline]
     pub(crate) fn add_base_address(&mut self, base_address: u64, address_size: u8) {
         let mask = !0 >> (64 - address_size * 8);
         self.begin = base_address.wrapping_add(self.begin) & mask;

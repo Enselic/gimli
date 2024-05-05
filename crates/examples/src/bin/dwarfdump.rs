@@ -27,7 +27,6 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> ::std::result::Result<(), fmt::Error> {
         Debug::fmt(self, f)
     }

@@ -28,13 +28,11 @@ where
     Endian: Endianity,
 {
     /// Construct a new `EndianSlice` with the given slice and endianity.
-    #[inline]
     pub fn new(slice: &'input [u8], endian: Endian) -> EndianSlice<'input, Endian> {
         EndianSlice { slice, endian }
     }
 
     /// Return a reference to the raw slice.
-    #[inline]
     #[doc(hidden)]
     #[deprecated(note = "Method renamed to EndianSlice::slice; use that instead.")]
     pub fn buf(&self) -> &'input [u8] {
@@ -42,7 +40,6 @@ where
     }
 
     /// Return a reference to the raw slice.
-    #[inline]
     pub fn slice(&self) -> &'input [u8] {
         self.slice
     }
@@ -50,7 +47,6 @@ where
     /// Split the slice in two at the given index, resulting in the tuple where
     /// the first item has range [0, idx), and the second has range [idx,
     /// len). Panics if the index is out of bounds.
-    #[inline]
     pub fn split_at(
         &self,
         idx: usize,
@@ -59,14 +55,12 @@ where
     }
 
     /// Find the first occurrence of a byte in the slice, and return its index.
-    #[inline]
     pub fn find(&self, byte: u8) -> Option<usize> {
         self.slice.iter().position(|ch| *ch == byte)
     }
 
     /// Return the offset of the start of the slice relative to the start
     /// of the given slice.
-    #[inline]
     pub fn offset_from(&self, base: EndianSlice<'input, Endian>) -> usize {
         let base_ptr = base.slice.as_ptr() as usize;
         let ptr = self.slice.as_ptr() as usize;
@@ -78,7 +72,6 @@ where
     /// Converts the slice to a string using `str::from_utf8`.
     ///
     /// Returns an error if the slice contains invalid characters.
-    #[inline]
     pub fn to_string(&self) -> Result<&'input str> {
         str::from_utf8(self.slice).map_err(|_| Error::BadUtf8)
     }
@@ -86,12 +79,10 @@ where
     /// Converts the slice to a string, including invalid characters,
     /// using `String::from_utf8_lossy`.
     #[cfg(feature = "read")]
-    #[inline]
     pub fn to_string_lossy(&self) -> Cow<'input, str> {
         String::from_utf8_lossy(self.slice)
     }
 
-    #[inline]
     fn read_slice(&mut self, len: usize) -> Result<&'input [u8]> {
         if self.slice.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -223,27 +214,22 @@ where
     type Endian = Endian;
     type Offset = usize;
 
-    #[inline]
     fn endian(&self) -> Endian {
         self.endian
     }
 
-    #[inline]
     fn len(&self) -> usize {
         self.slice.len()
     }
 
-    #[inline]
     fn is_empty(&self) -> bool {
         self.slice.is_empty()
     }
 
-    #[inline]
     fn empty(&mut self) {
         self.slice = &[];
     }
 
-    #[inline]
     fn truncate(&mut self, len: usize) -> Result<()> {
         if self.slice.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -253,17 +239,14 @@ where
         }
     }
 
-    #[inline]
     fn offset_from(&self, base: &Self) -> usize {
         self.offset_from(*base)
     }
 
-    #[inline]
     fn offset_id(&self) -> ReaderOffsetId {
         ReaderOffsetId(self.slice.as_ptr() as u64)
     }
 
-    #[inline]
     fn lookup_offset_id(&self, id: ReaderOffsetId) -> Option<Self::Offset> {
         let id = id.0;
         let self_id = self.slice.as_ptr() as u64;
@@ -275,13 +258,11 @@ where
         }
     }
 
-    #[inline]
     fn find(&self, byte: u8) -> Result<usize> {
         self.find(byte)
             .ok_or_else(|| Error::UnexpectedEof(self.offset_id()))
     }
 
-    #[inline]
     fn skip(&mut self, len: usize) -> Result<()> {
         if self.slice.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -291,7 +272,6 @@ where
         }
     }
 
-    #[inline]
     fn split(&mut self, len: usize) -> Result<Self> {
         let slice = self.read_slice(len)?;
         Ok(EndianSlice::new(slice, self.endian))
@@ -303,13 +283,11 @@ where
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_slice(&self) -> Result<Cow<'_, [u8]>> {
         Ok(self.slice.into())
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_string(&self) -> Result<Cow<'_, str>> {
         match str::from_utf8(self.slice) {
             Ok(s) => Ok(s.into()),
@@ -318,12 +296,10 @@ where
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_string_lossy(&self) -> Result<Cow<'_, str>> {
         Ok(String::from_utf8_lossy(self.slice))
     }
 
-    #[inline]
     fn read_slice(&mut self, buf: &mut [u8]) -> Result<()> {
         let slice = self.read_slice(buf.len())?;
         buf.copy_from_slice(slice);

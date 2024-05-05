@@ -32,7 +32,6 @@ impl UnitTable {
     /// `address_size` must be in bytes.
     ///
     /// Returns the `UnitId` of the new unit.
-    #[inline]
     pub fn add(&mut self, unit: Unit) -> UnitId {
         let id = UnitId::new(self.base_id, self.units.len());
         self.units.push(unit);
@@ -40,7 +39,6 @@ impl UnitTable {
     }
 
     /// Return the number of units.
-    #[inline]
     pub fn count(&self) -> usize {
         self.units.len()
     }
@@ -50,7 +48,6 @@ impl UnitTable {
     /// # Panics
     ///
     /// Panics if `index >= self.count()`.
-    #[inline]
     pub fn id(&self, index: usize) -> UnitId {
         assert!(index < self.count());
         UnitId::new(self.base_id, index)
@@ -61,7 +58,6 @@ impl UnitTable {
     /// # Panics
     ///
     /// Panics if `id` is invalid.
-    #[inline]
     pub fn get(&self, id: UnitId) -> &Unit {
         debug_assert_eq!(self.base_id, id.base_id);
         &self.units[id.index]
@@ -72,7 +68,6 @@ impl UnitTable {
     /// # Panics
     ///
     /// Panics if `id` is invalid.
-    #[inline]
     pub fn get_mut(&mut self, id: UnitId) -> &mut Unit {
         debug_assert_eq!(self.base_id, id.base_id);
         &mut self.units[id.index]
@@ -191,25 +186,21 @@ impl Unit {
     }
 
     /// Return the encoding parameters for this unit.
-    #[inline]
     pub fn encoding(&self) -> Encoding {
         self.encoding
     }
 
     /// Return the DWARF version for this unit.
-    #[inline]
     pub fn version(&self) -> u16 {
         self.encoding.version
     }
 
     /// Return the address size in bytes for this unit.
-    #[inline]
     pub fn address_size(&self) -> u8 {
         self.encoding.address_size
     }
 
     /// Return the DWARF format for this unit.
-    #[inline]
     pub fn format(&self) -> Format {
         self.encoding.format
     }
@@ -217,13 +208,11 @@ impl Unit {
     /// Return the number of `DebuggingInformationEntry`s created for this unit.
     ///
     /// This includes entries that no longer have a parent.
-    #[inline]
     pub fn count(&self) -> usize {
         self.entries.len()
     }
 
     /// Return the id of the root entry.
-    #[inline]
     pub fn root(&self) -> UnitEntryId {
         self.root
     }
@@ -235,7 +224,6 @@ impl Unit {
     /// # Panics
     ///
     /// Panics if `parent` is invalid.
-    #[inline]
     pub fn add(&mut self, parent: UnitEntryId, tag: constants::DwTag) -> UnitEntryId {
         debug_assert_eq!(self.base_id, parent.base_id);
         DebuggingInformationEntry::new(self.base_id, &mut self.entries, Some(parent), tag)
@@ -246,7 +234,6 @@ impl Unit {
     /// # Panics
     ///
     /// Panics if `id` is invalid.
-    #[inline]
     pub fn get(&self, id: UnitEntryId) -> &DebuggingInformationEntry {
         debug_assert_eq!(self.base_id, id.base_id);
         &self.entries[id.index]
@@ -257,7 +244,6 @@ impl Unit {
     /// # Panics
     ///
     /// Panics if `id` is invalid.
-    #[inline]
     pub fn get_mut(&mut self, id: UnitEntryId) -> &mut DebuggingInformationEntry {
         debug_assert_eq!(self.base_id, id.base_id);
         &mut self.entries[id.index]
@@ -454,25 +440,21 @@ impl DebuggingInformationEntry {
     }
 
     /// Return the id of this entry.
-    #[inline]
     pub fn id(&self) -> UnitEntryId {
         self.id
     }
 
     /// Return the parent of this entry.
-    #[inline]
     pub fn parent(&self) -> Option<UnitEntryId> {
         self.parent
     }
 
     /// Return the tag of this entry.
-    #[inline]
     pub fn tag(&self) -> constants::DwTag {
         self.tag
     }
 
     /// Return `true` if a `DW_AT_sibling` attribute will be emitted.
-    #[inline]
     pub fn sibling(&self) -> bool {
         self.sibling
     }
@@ -480,19 +462,16 @@ impl DebuggingInformationEntry {
     /// Set whether a `DW_AT_sibling` attribute will be emitted.
     ///
     /// The attribute will only be emitted if the DIE has children.
-    #[inline]
     pub fn set_sibling(&mut self, sibling: bool) {
         self.sibling = sibling;
     }
 
     /// Iterate over the attributes of this entry.
-    #[inline]
     pub fn attrs(&self) -> slice::Iter<'_, Attribute> {
         self.attrs.iter()
     }
 
     /// Iterate over the attributes of this entry for modification.
-    #[inline]
     pub fn attrs_mut(&mut self) -> slice::IterMut<'_, Attribute> {
         self.attrs.iter_mut()
     }
@@ -539,7 +518,6 @@ impl DebuggingInformationEntry {
     /// Iterate over the children of this entry.
     ///
     /// Note: use `Unit::add` to add a new child to this entry.
-    #[inline]
     pub fn children(&self) -> slice::Iter<'_, UnitEntryId> {
         self.children.iter()
     }
@@ -681,19 +659,16 @@ pub struct Attribute {
 
 impl Attribute {
     /// Get the name of this attribute.
-    #[inline]
     pub fn name(&self) -> constants::DwAt {
         self.name
     }
 
     /// Get the value of this attribute.
-    #[inline]
     pub fn get(&self) -> &AttributeValue {
         &self.value
     }
 
     /// Set the value of this attribute.
-    #[inline]
     pub fn set(&mut self, value: AttributeValue) {
         self.value = value;
     }
@@ -1385,14 +1360,12 @@ impl DebugInfoOffsets {
     }
 
     /// Get the `.debug_info` section offset for the given unit.
-    #[inline]
     pub fn unit(&self, unit: UnitId) -> DebugInfoOffset {
         debug_assert_eq!(self.base_id, unit.base_id);
         self.units[unit.index].unit
     }
 
     /// Get the `.debug_info` section offset for the given entry.
-    #[inline]
     pub fn entry(&self, unit: UnitId, entry: UnitEntryId) -> DebugInfoOffset {
         debug_assert_eq!(self.base_id, unit.base_id);
         self.units[unit.index].debug_info_offset(entry)
@@ -1419,7 +1392,6 @@ impl UnitOffsets {
     }
 
     /// Get the .debug_info offset for the given entry.
-    #[inline]
     pub(crate) fn debug_info_offset(&self, entry: UnitEntryId) -> DebugInfoOffset {
         debug_assert_eq!(self.base_id, entry.base_id);
         let offset = self.entries[entry.index].offset;
@@ -1428,14 +1400,12 @@ impl UnitOffsets {
     }
 
     /// Get the unit offset for the given entry.
-    #[inline]
     pub(crate) fn unit_offset(&self, entry: UnitEntryId) -> u64 {
         let offset = self.debug_info_offset(entry);
         (offset.0 - self.unit.0) as u64
     }
 
     /// Get the abbreviation code for the given entry.
-    #[inline]
     pub(crate) fn abbrev(&self, entry: UnitEntryId) -> u64 {
         debug_assert_eq!(self.base_id, entry.base_id);
         self.entries[entry.index].abbrev

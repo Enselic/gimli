@@ -52,69 +52,56 @@ pub trait ReaderOffset:
 }
 
 impl ReaderOffset for u64 {
-    #[inline]
     fn from_u8(offset: u8) -> Self {
         u64::from(offset)
     }
 
-    #[inline]
     fn from_u16(offset: u16) -> Self {
         u64::from(offset)
     }
 
-    #[inline]
     fn from_i16(offset: i16) -> Self {
         offset as u64
     }
 
-    #[inline]
     fn from_u32(offset: u32) -> Self {
         u64::from(offset)
     }
 
-    #[inline]
     fn from_u64(offset: u64) -> Result<Self> {
         Ok(offset)
     }
 
-    #[inline]
     fn into_u64(self) -> u64 {
         self
     }
 
-    #[inline]
     fn wrapping_add(self, other: Self) -> Self {
         self.wrapping_add(other)
     }
 
-    #[inline]
     fn checked_sub(self, other: Self) -> Option<Self> {
         self.checked_sub(other)
     }
 }
 
 impl ReaderOffset for u32 {
-    #[inline]
     fn from_u8(offset: u8) -> Self {
         u32::from(offset)
     }
 
-    #[inline]
     fn from_u16(offset: u16) -> Self {
         u32::from(offset)
     }
 
-    #[inline]
     fn from_i16(offset: i16) -> Self {
         offset as u32
     }
 
-    #[inline]
     fn from_u32(offset: u32) -> Self {
         offset
     }
 
-    #[inline]
     fn from_u64(offset64: u64) -> Result<Self> {
         let offset = offset64 as u32;
         if u64::from(offset) == offset64 {
@@ -124,44 +111,36 @@ impl ReaderOffset for u32 {
         }
     }
 
-    #[inline]
     fn into_u64(self) -> u64 {
         u64::from(self)
     }
 
-    #[inline]
     fn wrapping_add(self, other: Self) -> Self {
         self.wrapping_add(other)
     }
 
-    #[inline]
     fn checked_sub(self, other: Self) -> Option<Self> {
         self.checked_sub(other)
     }
 }
 
 impl ReaderOffset for usize {
-    #[inline]
     fn from_u8(offset: u8) -> Self {
         offset as usize
     }
 
-    #[inline]
     fn from_u16(offset: u16) -> Self {
         offset as usize
     }
 
-    #[inline]
     fn from_i16(offset: i16) -> Self {
         offset as usize
     }
 
-    #[inline]
     fn from_u32(offset: u32) -> Self {
         offset as usize
     }
 
-    #[inline]
     fn from_u64(offset64: u64) -> Result<Self> {
         let offset = offset64 as usize;
         if offset as u64 == offset64 {
@@ -171,17 +150,14 @@ impl ReaderOffset for usize {
         }
     }
 
-    #[inline]
     fn into_u64(self) -> u64 {
         self as u64
     }
 
-    #[inline]
     fn wrapping_add(self, other: Self) -> Self {
         self.wrapping_add(other)
     }
 
-    #[inline]
     fn checked_sub(self, other: Self) -> Option<Self> {
         self.checked_sub(other)
     }
@@ -300,7 +276,6 @@ pub trait Reader: Debug + Clone {
     fn read_slice(&mut self, buf: &mut [u8]) -> Result<()>;
 
     /// Read a u8 array.
-    #[inline]
     fn read_u8_array<A>(&mut self) -> Result<A>
     where
         A: Sized + Default + AsMut<[u8]>,
@@ -311,76 +286,65 @@ pub trait Reader: Debug + Clone {
     }
 
     /// Return true if the number of bytes remaining is zero.
-    #[inline]
     fn is_empty(&self) -> bool {
         self.len() == Self::Offset::from_u8(0)
     }
 
     /// Read a u8.
-    #[inline]
     fn read_u8(&mut self) -> Result<u8> {
         let a: [u8; 1] = self.read_u8_array()?;
         Ok(a[0])
     }
 
     /// Read an i8.
-    #[inline]
     fn read_i8(&mut self) -> Result<i8> {
         let a: [u8; 1] = self.read_u8_array()?;
         Ok(a[0] as i8)
     }
 
     /// Read a u16.
-    #[inline]
     fn read_u16(&mut self) -> Result<u16> {
         let a: [u8; 2] = self.read_u8_array()?;
         Ok(self.endian().read_u16(&a))
     }
 
     /// Read an i16.
-    #[inline]
     fn read_i16(&mut self) -> Result<i16> {
         let a: [u8; 2] = self.read_u8_array()?;
         Ok(self.endian().read_i16(&a))
     }
 
     /// Read a u32.
-    #[inline]
     fn read_u32(&mut self) -> Result<u32> {
         let a: [u8; 4] = self.read_u8_array()?;
         Ok(self.endian().read_u32(&a))
     }
 
     /// Read an i32.
-    #[inline]
     fn read_i32(&mut self) -> Result<i32> {
         let a: [u8; 4] = self.read_u8_array()?;
         Ok(self.endian().read_i32(&a))
     }
 
     /// Read a u64.
-    #[inline]
     fn read_u64(&mut self) -> Result<u64> {
         let a: [u8; 8] = self.read_u8_array()?;
         Ok(self.endian().read_u64(&a))
     }
 
     /// Read an i64.
-    #[inline]
     fn read_i64(&mut self) -> Result<i64> {
         let a: [u8; 8] = self.read_u8_array()?;
         Ok(self.endian().read_i64(&a))
     }
 
     /// Read a f32.
-    #[inline]
     fn read_f32(&mut self) -> Result<f32> {
         let a: [u8; 4] = self.read_u8_array()?;
         Ok(self.endian().read_f32(&a))
     }
 
     /// Read a f64.
-    #[inline]
     fn read_f64(&mut self) -> Result<f64> {
         let a: [u8; 8] = self.read_u8_array()?;
         Ok(self.endian().read_f64(&a))
@@ -391,7 +355,6 @@ pub trait Reader: Debug + Clone {
     /// # Panics
     ///
     /// Panics when nbytes < 1 or nbytes > 8
-    #[inline]
     fn read_uint(&mut self, n: usize) -> Result<u64> {
         let mut buf = [0; 8];
         self.read_slice(&mut buf[..n])?;
@@ -475,13 +438,11 @@ pub trait Reader: Debug + Clone {
     }
 
     /// Parse a word-sized section length according to the DWARF format.
-    #[inline]
     fn read_length(&mut self, format: Format) -> Result<Self::Offset> {
         self.read_word(format)
     }
 
     /// Parse a word-sized section offset according to the DWARF format.
-    #[inline]
     fn read_offset(&mut self, format: Format) -> Result<Self::Offset> {
         self.read_word(format)
     }

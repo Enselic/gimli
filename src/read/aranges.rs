@@ -198,37 +198,31 @@ where
     }
 
     /// Return the offset of this header within the `.debug_aranges` section.
-    #[inline]
     pub fn offset(&self) -> DebugArangesOffset<Offset> {
         self.offset
     }
 
     /// Return the length of this set of entries, including the header.
-    #[inline]
     pub fn length(&self) -> Offset {
         self.length
     }
 
     /// Return the encoding parameters for this set of entries.
-    #[inline]
     pub fn encoding(&self) -> Encoding {
         self.encoding
     }
 
     /// Return the segment size for this set of entries.
-    #[inline]
     pub fn segment_size(&self) -> u8 {
         self.segment_size
     }
 
     /// Return the offset into the .debug_info section for this set of arange entries.
-    #[inline]
     pub fn debug_info_offset(&self) -> DebugInfoOffset<Offset> {
         self.debug_info_offset
     }
 
     /// Return the arange entries in this set.
-    #[inline]
     pub fn entries(&self) -> ArangeEntryIter<R> {
         ArangeEntryIter {
             input: self.entries.clone(),
@@ -334,25 +328,21 @@ impl ArangeEntry {
     }
 
     /// Return the segment selector of this arange.
-    #[inline]
     pub fn segment(&self) -> Option<u64> {
         self.segment
     }
 
     /// Return the beginning address of this arange.
-    #[inline]
     pub fn address(&self) -> u64 {
         self.address
     }
 
     /// Return the length of this arange.
-    #[inline]
     pub fn length(&self) -> u64 {
         self.length
     }
 
     /// Return the range.
-    #[inline]
     pub fn range(&self) -> Range {
         Range {
             begin: self.address,

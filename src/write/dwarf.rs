@@ -28,7 +28,6 @@ pub struct Dwarf {
 
 impl Dwarf {
     /// Create a new `Dwarf` instance.
-    #[inline]
     pub fn new() -> Self {
         Self::default()
     }

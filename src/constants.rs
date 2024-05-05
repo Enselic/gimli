@@ -1352,26 +1352,22 @@ impl ops::BitOr for DwEhPe {
 
 impl DwEhPe {
     /// Get the pointer encoding's format.
-    #[inline]
     pub fn format(self) -> DwEhPe {
         DwEhPe(self.0 & DW_EH_PE_FORMAT_MASK)
     }
 
     /// Get the pointer encoding's application.
-    #[inline]
     pub fn application(self) -> DwEhPe {
         DwEhPe(self.0 & DW_EH_PE_APPLICATION_MASK)
     }
 
     /// Is this encoding the absent pointer encoding?
-    #[inline]
     pub fn is_absent(self) -> bool {
         self == DW_EH_PE_omit
     }
 
     /// Is this coding indirect? If so, its encoded value is the address of the
     /// real pointer result, not the pointer result itself.
-    #[inline]
     pub fn is_indirect(self) -> bool {
         self.0 & DW_EH_PE_indirect.0 != 0
     }

@@ -434,7 +434,6 @@ impl<'a, R: Reader + 'a> EhHdrTable<'a, R> {
         }
     }
 
-    #[inline]
     #[doc(hidden)]
     #[deprecated(note = "Method renamed to fde_for_address; use that instead.")]
     pub fn lookup_and_parse<F>(
@@ -582,7 +581,6 @@ impl<T> UnwindOffset<T> for DebugFrameOffset<T>
 where
     T: ReaderOffset,
 {
-    #[inline]
     fn into(self) -> T {
         self.0
     }
@@ -592,7 +590,6 @@ impl<T> UnwindOffset<T> for EhFrameOffset<T>
 where
     T: ReaderOffset,
 {
-    #[inline]
     fn into(self) -> T {
         self.0
     }
@@ -777,7 +774,6 @@ pub trait UnwindSection<R: Reader>: Clone + Debug + _UnwindSectionPrivate<R> {
     /// # unreachable!()
     /// # }
     /// ```
-    #[inline]
     fn unwind_info_for_address<'ctx, F, A: UnwindContextStorage<R::Offset>>(
         &self,
         bases: &BaseAddresses,
@@ -941,7 +937,6 @@ pub struct SectionBaseAddresses {
 
 impl BaseAddresses {
     /// Set the `.eh_frame_hdr` section base address.
-    #[inline]
     pub fn set_eh_frame_hdr(mut self, addr: u64) -> Self {
         self.eh_frame_hdr.section = Some(addr);
         self.eh_frame_hdr.data = Some(addr);
@@ -949,14 +944,12 @@ impl BaseAddresses {
     }
 
     /// Set the `.eh_frame` section base address.
-    #[inline]
     pub fn set_eh_frame(mut self, addr: u64) -> Self {
         self.eh_frame.section = Some(addr);
         self
     }
 
     /// Set the `.text` section base address.
-    #[inline]
     pub fn set_text(mut self, addr: u64) -> Self {
         self.eh_frame_hdr.text = Some(addr);
         self.eh_frame.text = Some(addr);
@@ -964,7 +957,6 @@ impl BaseAddresses {
     }
 
     /// Set the `.got` section base address.
-    #[inline]
     pub fn set_got(mut self, addr: u64) -> Self {
         self.eh_frame.data = Some(addr);
         self
@@ -1733,7 +1725,6 @@ impl<R: Reader> FrameDescriptionEntry<R> {
     }
 
     /// Return the table of unwind information for this FDE.
-    #[inline]
     pub fn rows<'a, 'ctx, Section: UnwindSection<R>, A: UnwindContextStorage<R::Offset>>(
         &self,
         section: &'a Section,
@@ -1851,7 +1842,6 @@ impl<R: Reader> FrameDescriptionEntry<R> {
     }
 
     /// Return true if this FDE's function is a trampoline for a signal handler.
-    #[inline]
     pub fn is_signal_trampoline(&self) -> bool {
         self.cie().is_signal_trampoline()
     }
@@ -1859,7 +1849,6 @@ impl<R: Reader> FrameDescriptionEntry<R> {
     /// Return the address of the FDE's function's personality routine
     /// handler. The personality routine does language-specific clean up when
     /// unwinding the stack frames with the intent to not run them again.
-    #[inline]
     pub fn personality(&self) -> Option<Pointer> {
         self.cie().personality()
     }
@@ -3485,7 +3474,6 @@ impl<T: ReaderOffset> UnwindExpression<T> {
 
 /// Parse a `DW_EH_PE_*` pointer encoding.
 #[doc(hidden)]
-#[inline]
 fn parse_pointer_encoding<R: Reader>(input: &mut R) -> Result<constants::DwEhPe> {
     let eh_pe = input.read_u8()?;
     let eh_pe = constants::DwEhPe(eh_pe);
@@ -3513,14 +3501,12 @@ pub enum Pointer {
 }
 
 impl Default for Pointer {
-    #[inline]
     fn default() -> Self {
         Pointer::Direct(0)
     }
 }
 
 impl Pointer {
-    #[inline]
     fn new(encoding: constants::DwEhPe, address: u64) -> Pointer {
         if encoding.is_indirect() {
             Pointer::Indirect(address)
@@ -3530,7 +3516,6 @@ impl Pointer {
     }
 
     /// Return the direct pointer value.
-    #[inline]
     pub fn direct(self) -> Result<u64> {
         match self {
             Pointer::Direct(p) => Ok(p),
@@ -3539,7 +3524,6 @@ impl Pointer {
     }
 
     /// Return the pointer value, discarding indirectness information.
-    #[inline]
     pub fn pointer(self) -> u64 {
         match self {
             Pointer::Direct(p) | Pointer::Indirect(p) => p,

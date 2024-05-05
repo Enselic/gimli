@@ -48,7 +48,6 @@ fn bench_parsing_debug_abbrev(b: &mut test::Bencher) {
     });
 }
 
-#[inline]
 fn impl_bench_parsing_debug_info<R: Reader>(
     debug_info: DebugInfo<R>,
     debug_abbrev: DebugAbbrev<R>,

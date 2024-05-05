@@ -16,7 +16,6 @@ pub struct Expression {
 
 impl Expression {
     /// Create an empty expression.
-    #[inline]
     pub fn new() -> Self {
         Self::default()
     }
@@ -24,7 +23,6 @@ impl Expression {
     /// Create an expression from raw bytecode.
     ///
     /// This does not support operations that require references, such as `DW_OP_addr`.
-    #[inline]
     pub fn raw(bytecode: Vec<u8>) -> Self {
         Expression {
             operations: vec![Operation::Raw(bytecode)],
@@ -158,7 +156,6 @@ impl Expression {
     /// Return the index that will be assigned to the next operation.
     ///
     /// This can be passed to `set_target`.
-    #[inline]
     pub fn next_index(&self) -> usize {
         self.operations.len()
     }

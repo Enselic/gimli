@@ -68,7 +68,6 @@ where
         self.relocate.relocate_offset(offset, value)
     }
 
-    #[inline]
     fn split(&mut self, len: Self::Offset) -> Result<Self> {
         let mut other = self.clone();
         other.reader.truncate(len)?;
@@ -78,47 +77,38 @@ where
 
     // All remaining methods simply delegate to `self.reader`.
 
-    #[inline]
     fn endian(&self) -> Self::Endian {
         self.reader.endian()
     }
 
-    #[inline]
     fn len(&self) -> Self::Offset {
         self.reader.len()
     }
 
-    #[inline]
     fn empty(&mut self) {
         self.reader.empty()
     }
 
-    #[inline]
     fn truncate(&mut self, len: Self::Offset) -> Result<()> {
         self.reader.truncate(len)
     }
 
-    #[inline]
     fn offset_from(&self, base: &Self) -> Self::Offset {
         self.reader.offset_from(&base.reader)
     }
 
-    #[inline]
     fn offset_id(&self) -> ReaderOffsetId {
         self.reader.offset_id()
     }
 
-    #[inline]
     fn lookup_offset_id(&self, id: ReaderOffsetId) -> Option<Self::Offset> {
         self.reader.lookup_offset_id(id)
     }
 
-    #[inline]
     fn find(&self, byte: u8) -> Result<Self::Offset> {
         self.reader.find(byte)
     }
 
-    #[inline]
     fn skip(&mut self, len: Self::Offset) -> Result<()> {
         self.reader.skip(len)
     }
@@ -129,24 +119,20 @@ where
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_slice(&self) -> Result<Cow<'_, [u8]>> {
         self.reader.to_slice()
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_string(&self) -> Result<Cow<'_, str>> {
         self.reader.to_string()
     }
 
     #[cfg(feature = "read")]
-    #[inline]
     fn to_string_lossy(&self) -> Result<Cow<'_, str>> {
         self.reader.to_string_lossy()
     }
 
-    #[inline]
     fn read_slice(&mut self, buf: &mut [u8]) -> Result<()> {
         self.reader.read_slice(buf)
     }

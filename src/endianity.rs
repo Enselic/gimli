@@ -9,7 +9,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     fn is_big_endian(self) -> bool;
 
     /// Return true for little endian byte order.
-    #[inline]
     fn is_little_endian(self) -> bool {
         !self.is_big_endian()
     }
@@ -19,7 +18,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 2`.
-    #[inline]
     fn read_u16(self, buf: &[u8]) -> u16 {
         let bytes: &[u8; 2] = buf[..2].try_into().unwrap();
         if self.is_big_endian() {
@@ -34,7 +32,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 4`.
-    #[inline]
     fn read_u32(self, buf: &[u8]) -> u32 {
         let bytes: &[u8; 4] = buf[..4].try_into().unwrap();
         if self.is_big_endian() {
@@ -49,7 +46,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 8`.
-    #[inline]
     fn read_u64(self, buf: &[u8]) -> u64 {
         let bytes: &[u8; 8] = buf[..8].try_into().unwrap();
         if self.is_big_endian() {
@@ -64,7 +60,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 1` or `buf.len() > 8`.
-    #[inline]
     fn read_uint(&mut self, buf: &[u8]) -> u64 {
         let mut tmp = [0; 8];
         if self.is_big_endian() {
@@ -80,7 +75,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 2`.
-    #[inline]
     fn read_i16(self, buf: &[u8]) -> i16 {
         self.read_u16(buf) as i16
     }
@@ -90,7 +84,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 4`.
-    #[inline]
     fn read_i32(self, buf: &[u8]) -> i32 {
         self.read_u32(buf) as i32
     }
@@ -100,7 +93,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 8`.
-    #[inline]
     fn read_i64(self, buf: &[u8]) -> i64 {
         self.read_u64(buf) as i64
     }
@@ -110,7 +102,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 8`.
-    #[inline]
     fn read_f32(self, buf: &[u8]) -> f32 {
         f32::from_bits(self.read_u32(buf))
     }
@@ -120,7 +111,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 8`.
-    #[inline]
     fn read_f64(self, buf: &[u8]) -> f64 {
         f64::from_bits(self.read_u64(buf))
     }
@@ -130,7 +120,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 2`.
-    #[inline]
     fn write_u16(self, buf: &mut [u8], n: u16) {
         let bytes = if self.is_big_endian() {
             n.to_be_bytes()
@@ -145,7 +134,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 4`.
-    #[inline]
     fn write_u32(self, buf: &mut [u8], n: u32) {
         let bytes = if self.is_big_endian() {
             n.to_be_bytes()
@@ -160,7 +148,6 @@ pub trait Endianity: Debug + Default + Clone + Copy + PartialEq + Eq {
     /// # Panics
     ///
     /// Panics when `buf.len() < 8`.
-    #[inline]
     fn write_u64(self, buf: &mut [u8], n: u64) {
         let bytes = if self.is_big_endian() {
             n.to_be_bytes()
@@ -182,20 +169,17 @@ pub enum RunTimeEndian {
 
 impl Default for RunTimeEndian {
     #[cfg(target_endian = "little")]
-    #[inline]
     fn default() -> RunTimeEndian {
         RunTimeEndian::Little
     }
 
     #[cfg(target_endian = "big")]
-    #[inline]
     fn default() -> RunTimeEndian {
         RunTimeEndian::Big
     }
 }
 
 impl Endianity for RunTimeEndian {
-    #[inline]
     fn is_big_endian(self) -> bool {
         self != RunTimeEndian::Little
     }
@@ -206,14 +190,12 @@ impl Endianity for RunTimeEndian {
 pub struct LittleEndian;
 
 impl Default for LittleEndian {
-    #[inline]
     fn default() -> LittleEndian {
         LittleEndian
     }
 }
 
 impl Endianity for LittleEndian {
-    #[inline]
     fn is_big_endian(self) -> bool {
         false
     }
@@ -224,14 +206,12 @@ impl Endianity for LittleEndian {
 pub struct BigEndian;
 
 impl Default for BigEndian {
-    #[inline]
     fn default() -> BigEndian {
         BigEndian
     }
 }
 
 impl Endianity for BigEndian {
-    #[inline]
     fn is_big_endian(self) -> bool {
         true
     }
