@@ -24,14 +24,12 @@ impl Default for ListsHeader {
 impl ListsHeader {
     /// Return the serialized size of the table header.
     #[allow(dead_code)]
-    #[inline]
     fn size(self) -> u8 {
         // initial_length + version + address_size + segment_selector_size + offset_entry_count
         ListsHeader::size_for_encoding(self.encoding)
     }
 
     /// Return the serialized size of the table header.
-    #[inline]
     pub(crate) fn size_for_encoding(encoding: Encoding) -> u8 {
         // initial_length + version + address_size + segment_selector_size + offset_entry_count
         encoding.format.initial_length_size() + 2 + 1 + 1 + 4

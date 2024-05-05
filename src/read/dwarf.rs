@@ -188,13 +188,11 @@ impl<R: Reader> Dwarf<R> {
     ///
     /// Can be [used with
     /// `FallibleIterator`](./index.html#using-with-fallibleiterator).
-    #[inline]
     pub fn units(&self) -> DebugInfoUnitHeadersIter<R> {
         self.debug_info.units()
     }
 
     /// Construct a new `Unit` from the given unit header.
-    #[inline]
     pub fn unit(&self, header: UnitHeader<R>) -> Result<Unit<R>> {
         Unit::new(self, header)
     }
@@ -203,20 +201,17 @@ impl<R: Reader> Dwarf<R> {
     ///
     /// Can be [used with
     /// `FallibleIterator`](./index.html#using-with-fallibleiterator).
-    #[inline]
     pub fn type_units(&self) -> DebugTypesUnitHeadersIter<R> {
         self.debug_types.units()
     }
 
     /// Parse the abbreviations for a compilation unit.
-    #[inline]
     pub fn abbreviations(&self, unit: &UnitHeader<R>) -> Result<Arc<Abbreviations>> {
         self.abbreviations_cache
             .get(&self.debug_abbrev, unit.debug_abbrev_offset())
     }
 
     /// Return the string offset at the given index.
-    #[inline]
     pub fn string_offset(
         &self,
         unit: &Unit<R>,
@@ -227,13 +222,11 @@ impl<R: Reader> Dwarf<R> {
     }
 
     /// Return the string at the given offset in `.debug_str`.
-    #[inline]
     pub fn string(&self, offset: DebugStrOffset<R::Offset>) -> Result<R> {
         self.debug_str.get_str(offset)
     }
 
     /// Return the string at the given offset in `.debug_line_str`.
-    #[inline]
     pub fn line_string(&self, offset: DebugLineStrOffset<R::Offset>) -> Result<R> {
         self.debug_line_str.get_str(offset)
     }
@@ -865,7 +858,6 @@ where
 
 impl<R: Reader> Unit<R> {
     /// Construct a new `Unit` from the given unit header.
-    #[inline]
     pub fn new(dwarf: &Dwarf<R>, header: UnitHeader<R>) -> Result<Self> {
         let abbreviations = dwarf.abbreviations(&header)?;
         Self::new_with_abbreviations(dwarf, header, abbreviations)
@@ -876,7 +868,6 @@ impl<R: Reader> Unit<R> {
     /// The abbreviations for this call can be obtained using `dwarf.abbreviations(&header)`.
     /// The caller may implement caching to reuse the `Abbreviations` across units with the
     /// same `header.debug_abbrev_offset()` value.
-    #[inline]
     pub fn new_with_abbreviations(
         dwarf: &Dwarf<R>,
         header: UnitHeader<R>,
@@ -992,7 +983,6 @@ impl<R: Reader> Unit<R> {
     }
 
     /// Return the encoding parameters for this unit.
-    #[inline]
     pub fn encoding(&self) -> Encoding {
         self.header.encoding()
     }
@@ -1003,27 +993,23 @@ impl<R: Reader> Unit<R> {
     }
 
     /// Navigate this unit's `DebuggingInformationEntry`s.
-    #[inline]
     pub fn entries(&self) -> EntriesCursor<R> {
         self.header.entries(&self.abbreviations)
     }
 
     /// Navigate this unit's `DebuggingInformationEntry`s
     /// starting at the given offset.
-    #[inline]
     pub fn entries_at_offset(&self, offset: UnitOffset<R::Offset>) -> Result<EntriesCursor<R>> {
         self.header.entries_at_offset(&self.abbreviations, offset)
     }
 
     /// Navigate this unit's `DebuggingInformationEntry`s as a tree
     /// starting at the given offset.
-    #[inline]
     pub fn entries_tree(&self, offset: Option<UnitOffset<R::Offset>>) -> Result<EntriesTree<R>> {
         self.header.entries_tree(&self.abbreviations, offset)
     }
 
     /// Read the raw data that defines the Debugging Information Entries.
-    #[inline]
     pub fn entries_raw(&self, offset: Option<UnitOffset<R::Offset>>) -> Result<EntriesRaw<R>> {
         self.header.entries_raw(&self.abbreviations, offset)
     }
@@ -1142,7 +1128,6 @@ impl<R: Reader> fallible_iterator::FallibleIterator for RangeIter<R> {
     type Item = Range;
     type Error = Error;
 
-    #[inline]
     fn next(&mut self) -> ::core::result::Result<Option<Self::Item>, Self::Error> {
         RangeIter::next(self)
     }

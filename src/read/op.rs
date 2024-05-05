@@ -943,7 +943,6 @@ impl<R: Reader> Expression<R> {
     /// let mut result = eval.evaluate().unwrap();
     /// ```
     #[cfg(feature = "read")]
-    #[inline]
     pub fn evaluation(self, encoding: Encoding) -> Evaluation<R> {
         Evaluation::new(self.0, encoding)
     }
