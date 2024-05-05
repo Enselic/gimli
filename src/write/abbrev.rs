@@ -46,7 +46,6 @@ pub(crate) struct Abbreviation {
 
 impl Abbreviation {
     /// Construct a new `Abbreviation`.
-    #[inline]
     pub fn new(
         tag: constants::DwTag,
         has_children: bool,
@@ -86,13 +85,11 @@ pub(crate) struct AttributeSpecification {
 
 impl AttributeSpecification {
     /// Construct a new `AttributeSpecification`.
-    #[inline]
     pub fn new(name: constants::DwAt, form: constants::DwForm) -> AttributeSpecification {
         AttributeSpecification { name, form }
     }
 
     /// Write the attribute specification to the `.debug_abbrev` section.
-    #[inline]
     pub fn write<W: Writer>(&self, w: &mut DebugAbbrev<W>) -> Result<()> {
         w.write_uleb128(self.name.0.into())?;
         w.write_uleb128(self.form.0.into())

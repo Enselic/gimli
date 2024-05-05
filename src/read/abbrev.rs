@@ -187,7 +187,6 @@ impl Abbreviations {
     }
 
     /// Get the abbreviation associated with the given code.
-    #[inline]
     pub fn get(&self, code: u64) -> Option<&Abbreviation> {
         if let Ok(code) = usize::try_from(code) {
             let index = code.checked_sub(1)?;
@@ -245,25 +244,21 @@ impl Abbreviation {
     }
 
     /// Get this abbreviation's code.
-    #[inline]
     pub fn code(&self) -> u64 {
         self.code
     }
 
     /// Get this abbreviation's tag.
-    #[inline]
     pub fn tag(&self) -> constants::DwTag {
         self.tag
     }
 
     /// Return true if this abbreviation's type has children, false otherwise.
-    #[inline]
     pub fn has_children(&self) -> bool {
         self.has_children == constants::DW_CHILDREN_yes
     }
 
     /// Get this abbreviation's attributes.
-    #[inline]
     pub fn attributes(&self) -> &[AttributeSpecification] {
         &self.attributes[..]
     }
@@ -416,7 +411,6 @@ pub struct AttributeSpecification {
 impl AttributeSpecification {
     /// Construct a new `AttributeSpecification` from the given name and form
     /// and implicit const value.
-    #[inline]
     pub fn new(
         name: constants::DwAt,
         form: constants::DwForm,
@@ -434,19 +428,16 @@ impl AttributeSpecification {
     }
 
     /// Get the attribute's name.
-    #[inline]
     pub fn name(&self) -> constants::DwAt {
         self.name
     }
 
     /// Get the attribute's form.
-    #[inline]
     pub fn form(&self) -> constants::DwForm {
         self.form
     }
 
     /// Get the attribute's implicit const value.
-    #[inline]
     pub fn implicit_const_value(&self) -> Option<i64> {
         if self.form == constants::DW_FORM_implicit_const {
             Some(self.implicit_const_value)
@@ -499,7 +490,6 @@ impl AttributeSpecification {
     }
 }
 
-#[inline]
 pub(crate) fn get_attribute_size(form: constants::DwForm, encoding: Encoding) -> Option<u8> {
     match form {
         constants::DW_FORM_addr => Some(encoding.address_size),

@@ -52,12 +52,10 @@ where
 {
     type Endian = Endian;
 
-    #[inline]
     fn endian(&self) -> Self::Endian {
         self.endian
     }
 
-    #[inline]
     fn len(&self) -> usize {
         self.vec.len()
     }

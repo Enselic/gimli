@@ -437,7 +437,6 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> ::core::result::Result<(), fmt::Error> {
         write!(f, "{}", self.description())
     }

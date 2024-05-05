@@ -174,39 +174,33 @@ impl<T> SubRange<T>
 where
     T: CloneStableDeref<Target = [u8]> + Debug,
 {
-    #[inline]
     fn new(bytes: T) -> Self {
         let ptr = bytes.as_ptr();
         let len = bytes.len();
         SubRange { bytes, ptr, len }
     }
 
-    #[inline]
     fn bytes(&self) -> &[u8] {
         // Safe because `T` implements `CloneStableDeref`, `bytes` can't be modified,
         // and all operations that modify `ptr` and `len` ensure they stay in range.
         unsafe { slice::from_raw_parts(self.ptr, self.len) }
     }
 
-    #[inline]
     fn len(&self) -> usize {
         self.len
     }
 
-    #[inline]
     fn truncate(&mut self, len: usize) {
         assert!(len <= self.len);
         self.len = len;
     }
 
-    #[inline]
     fn skip(&mut self, len: usize) {
         assert!(len <= self.len);
         self.ptr = unsafe { self.ptr.add(len) };
         self.len -= len;
     }
 
-    #[inline]
     fn read_slice(&mut self, len: usize) -> Option<&[u8]> {
         if self.len() < len {
             None
@@ -225,7 +219,6 @@ where
     T: CloneStableDeref<Target = [u8]> + Debug,
 {
     /// Construct a new `EndianReader` with the given bytes.
-    #[inline]
     pub fn new(bytes: T, endian: Endian) -> EndianReader<Endian, T> {
         EndianReader {
             range: SubRange::new(bytes),
@@ -234,7 +227,6 @@ where
     }
 
     /// Return a reference to the raw bytes underlying this reader.
-    #[inline]
     pub fn bytes(&self) -> &[u8] {
         self.range.bytes()
     }
@@ -366,22 +358,18 @@ where
     type Endian = Endian;
     type Offset = usize;
 
-    #[inline]
     fn endian(&self) -> Endian {
         self.endian
     }
 
-    #[inline]
     fn len(&self) -> usize {
         self.range.len()
     }
 
-    #[inline]
     fn empty(&mut self) {
         self.range.truncate(0);
     }
 
-    #[inline]
     fn truncate(&mut self, len: usize) -> Result<()> {
         if self.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -391,7 +379,6 @@ where
         }
     }
 
-    #[inline]
     fn offset_from(&self, base: &EndianReader<Endian, T>) -> usize {
         let base_ptr = base.bytes().as_ptr() as *const u8 as usize;
         let ptr = self.bytes().as_ptr() as *const u8 as usize;
@@ -400,12 +387,10 @@ where
         ptr - base_ptr
     }
 
-    #[inline]
     fn offset_id(&self) -> ReaderOffsetId {
         ReaderOffsetId(self.bytes().as_ptr() as u64)
     }
 
-    #[inline]
     fn lookup_offset_id(&self, id: ReaderOffsetId) -> Option<Self::Offset> {
         let id = id.0;
         let self_id = self.bytes().as_ptr() as u64;
@@ -417,7 +402,6 @@ where
         }
     }
 
-    #[inline]
     fn find(&self, byte: u8) -> Result<usize> {
         self.bytes()
             .iter()
@@ -425,7 +409,6 @@ where
             .ok_or_else(|| Error::UnexpectedEof(self.offset_id()))
     }
 
-    #[inline]
     fn skip(&mut self, len: usize) -> Result<()> {
         if self.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -435,7 +418,6 @@ where
         }
     }
 
-    #[inline]
     fn split(&mut self, len: usize) -> Result<Self> {
         if self.len() < len {
             Err(Error::UnexpectedEof(self.offset_id()))
@@ -447,12 +429,10 @@ where
         }
     }
 
-    #[inline]
     fn to_slice(&self) -> Result<Cow<[u8]>> {
         Ok(self.bytes().into())
     }
 
-    #[inline]
     fn to_string(&self) -> Result<Cow<str>> {
         match str::from_utf8(self.bytes()) {
             Ok(s) => Ok(s.into()),
@@ -460,12 +440,10 @@ where
         }
     }
 
-    #[inline]
     fn to_string_lossy(&self) -> Result<Cow<str>> {
         Ok(String::from_utf8_lossy(self.bytes()))
     }
 
-    #[inline]
     fn read_slice(&mut self, buf: &mut [u8]) -> Result<()> {
         match self.range.read_slice(buf.len()) {
             Some(slice) => {

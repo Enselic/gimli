@@ -9,14 +9,12 @@ use crate::read::{Error, Reader, Result};
 ///
 /// This is primarily used when needing to treat `Value::Generic`
 /// as a signed value.
-#[inline]
 fn sign_extend(value: u64, mask: u64) -> i64 {
     let value = (value & mask) as i64;
     let sign = ((mask >> 1) + 1) as i64;
     (value ^ sign).wrapping_sub(sign)
 }
 
-#[inline]
 fn mask_bit_size(addr_mask: u64) -> u32 {
     64 - addr_mask.leading_zeros()
 }

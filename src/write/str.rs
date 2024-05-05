@@ -50,7 +50,6 @@ macro_rules! define_string_table {
             }
 
             /// Return the number of strings in the table.
-            #[inline]
             pub fn count(&self) -> usize {
                 self.strings.len()
             }
